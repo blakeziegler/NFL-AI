@@ -63,17 +63,18 @@ class NeuralNetwork:
     - Define linear and relu algorithms along w/ their derivatives
     '''
 
-    def _relu(self, ):
+    def _relu(self, Z):
+        return np.maximum(0, Z)
 
-    def _relu_derivative(self, ):
+    def _relu_derivative(self,Z ):
+        return (Z > 0).astype(float)
 
-    def _linear(self, ):
+    def _linear(self,Z ):
+        return Z
 
-    '''
-        FORWARD PROP
-    - Define input -> output algorithm
-    - compute cost function
-    '''
+    
+    " FORWARD PROP- Define input -> output algorithm- compute cost function"
+    
     def forward_feed(self, X):
         # Set network params
         A = X.T
@@ -109,15 +110,45 @@ class NeuralNetwork:
     - Update parameters
     '''
 
-    def backward_feed(self, ):
+    def backward_feed(self, Y_true):
+        L = len(self.layers) - 1
+        m = Y_true.shape[1]
+
+        # Output layer gradients
+        A = self.cache['A' + str(L)]
+        Z = self.cache['Z' + str(L)]
+        self.gradient['dZ' + str(L)] = A - Y_true
+        self.gradient['dW' + str(L)] = (1 / m) * np.dot(self.gradient['dZ' + str(L)], self.cache['A' + str(L - 1)].T)
+        self.gradient['db' + str(L)] = (1 / m) * np.sum(self.gradient['dZ' + str(L)], axis=1, keepdims=True)
+
+        # Hidden layer gradients
+        for layer in range(L - 1, 0, -1):
+            dZ_next = self.gradient['dZ' + str(layer + 1)]
+            W_next = self.params['W' + str(layer + 1)]
+            Z = self.cache['Z' + str(layer)]
+            self.gradient['dZ' + str(layer)] = np.dot(W_next.T, dZ_next) * self._relu_derivative(Z)
+            self.gradient['dW' + str(layer)] = (1 / m) * np.dot(self.gradient['dZ' + str(layer)], self.cache['A' + str(layer - 1)].T)
+            self.gradient['db' + str(layer)] = (1 / m) * np.sum(self.gradient['dZ' + str(layer)], axis=1, keepdims=True)
+
 
     def update_network(self):
+        L = len(self.layers) - 1
+        for layer in range(1, L + 1):
+            if self.optimizer == 'momentum':
+                self.velo['dW' + str(layer)] = self.beta * self.velo['dW' + str(layer)] + (1 - self.beta) * self.gradient['dW' + str(layer)]
+                self.velo['db' + str(layer)] = self.beta * self.velo['db' + str(layer)] + (1 - self.beta) * self.gradient['db' + str(layer)]
+
+                self.params['W' + str(layer)] -= self.learning * self.velo['dW' + str(layer)]
+                self.params['b' + str(layer)] -= self.learning * self.velo['db' + str(layer)]
+            else:  # Basic gradient descent
+                self.params['W' + str(layer)] -= self.learning * self.gradient['dW' + str(layer)]
+                self.params['b' + str(layer)] -= self.learning * self.gradient['db' + str(layer)]
 
 
 
-    '''
-        TRAINING AND OPTIMIZATION
-    '''
+    
+        'TRAINING AND OPTIMIZATION'
+    
 
     def train(self, X, Y, epochs=1000, batchsize=64):
         slope = X.shape[0]
@@ -143,4 +174,3 @@ class NeuralNetwork:
         def prediction(self, X_pred):
             Y_pred = self.forward_feed(X_pred)
             return Y_pred.T
-
