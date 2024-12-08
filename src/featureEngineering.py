@@ -5,7 +5,8 @@ from typing import Dict, List, Tuple
 class NFLFeatureProcessor:
     def __init__(self): 
         self.team_ratings = {}
-        # map of the team names
+
+        # map of the team names and standardizing them into abbr
         self.team_map = {
             'New Orleans Saints': 'NO',
             'Minnesota Vikings': 'MIN',
@@ -48,7 +49,8 @@ class NFLFeatureProcessor:
         
     def process_initial_features(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        First part of feature engineering focusing on core predictive features
+        core predictive features
+        orchestrating by calling helper methods
         
         Args:
             df: Input DataFrame containing NFL game data
@@ -58,19 +60,22 @@ class NFLFeatureProcessor:
         """
         processed = df.copy()
         
-        # Adding input validation
+        # validating all required columns
         required_columns = {
             'schedule_date', 'team_home', 'team_away', 'score_home', 'score_away',
             'team_favorite_id', 'spread_favorite', 'over_under_line'
         }
+        # else if column doesnt exist
         if not required_columns.issubset(df.columns):
             missing = required_columns - set(df.columns)
             raise ValueError(f"Missing required columns: {missing}")
-            
+        
+        # calling all helper methods
         processed = self._add_basic_features(processed)
         processed = self._add_team_performance(processed)
         processed = self._add_power_ratings(processed)
         return processed
+
 
     def _add_basic_features(self, df: pd.DataFrame) -> pd.DataFrame:
             """
@@ -79,14 +84,21 @@ class NFLFeatureProcessor:
             df = df.copy()
             
             # Basic score features
+            
+            # summing the scores of home and away team
             df['total_points'] = df['score_home'] + df['score_away']
+            # difference of scores
             df['point_differential'] = df['score_home'] - df['score_away']
+            # binary flag: is home team the favorite
             df['is_home_favorite'] = (df['team_favorite_id'] == df['team_home']).astype(int)
             
+
             # spread performance calculation
             df['spread_performance'] = df.apply(lambda row: self._calculate_spread_performance(row), axis=1)
             
+            # measuring total points comparison to line 
             df['over_under_performance'] = df['total_points'] - df['over_under_line']
+            # did favorite cover the spread
             df['favorite_won'] = (df['spread_performance'] > 0).astype(int)
             
             # validating spread calculations
@@ -98,12 +110,17 @@ class NFLFeatureProcessor:
         """
         Calculate spread performance with standardized team names
         """
+        
+        # mapping the home to corresponding abbr
         home_team_abbrev = self.team_map.get(row['team_home'])
+        # if is null then print
         if home_team_abbrev is None:
             print(f"Warning: Unknown team name: {row['team_home']}")
             home_team_abbrev = row['team_home']
-            
+        
+        # is home team favorite
         is_home_favorite = (row['team_favorite_id'] == home_team_abbrev)
+        # spread perf based on differential and spread
         point_diff = row['point_differential']
         spread = abs(row['spread_favorite'])
         
@@ -162,19 +179,21 @@ class NFLFeatureProcessor:
             opp_type = 'away' if team_type == 'home' else 'home'
             team_groups = df.groupby(f'team_{team_type}')
             
-            # handling for NaN values in rolling calculations
+            # rolling calculations 
+
+            # averages of point scored
             df[f'{team_type}_last3_points'] = team_groups[f'score_{team_type}'].transform(
                 lambda x: x.rolling(3, min_periods=1).mean().fillna(0)
             )
-            
+            # averages of points allowed
             df[f'{team_type}_last3_points_allowed'] = team_groups[f'score_{opp_type}'].transform(
                 lambda x: x.rolling(3, min_periods=1).mean().fillna(0)
             )
-            
+            # cover rate of the last 5 games
             df[f'{team_type}_cover_rate'] = team_groups['spread_performance'].transform(
                 lambda x: x.rolling(5, min_periods=1).apply(lambda x: (x > 0).mean()).fillna(0.5)
             )
-            
+            # win streak after last three games 
             df[f'{team_type}_streak'] = team_groups['point_differential'].transform(
                 lambda x: x.rolling(3, min_periods=1).apply(lambda x: sum(x > 0)).fillna(0)
             )
