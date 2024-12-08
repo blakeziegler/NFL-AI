@@ -1,0 +1,13 @@
+sports-betting/
+venv/
+env/
+.env/
+.venv/
+**/bin/
+**/lib/
+**/include/
+**/pyvenv.cfg
+pip-selfcheck.json
+**/__pycache__/
+*.py[cod]
+.Python
