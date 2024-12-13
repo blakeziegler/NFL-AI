@@ -6,12 +6,12 @@ from nn import NeuralNetwork
 
 
 def test_betting_system():
-    # Load historical data
-    print("Loading historical data...")
+    # Load Data
+    print("Loading data...")
     data = pd.read_csv('../data/historic_clean.csv')
 
-    # Initialize components
-    print("Initializing system components...")
+    # Initialize processor
+    print("Processing data...")
     feature_processor = NFLFeatureProcessor()
 
     # Configure feature columns
@@ -26,16 +26,16 @@ def test_betting_system():
     print("Processing features...")
     processed_data = feature_processor.process_initial_features(data)
 
-    # Prepare features and target variable
+    # Prepare data as X and target as y
     X = processed_data[feature_cols].values
     y = processed_data['spread_favorite'].values.reshape(-1, 1)
 
-    # Normalize the target variable (spread)
+    # Normalize target
     spread_mean = y.mean()
     spread_std = y.std()
     y_norm = (y - spread_mean) / spread_std
 
-    # Split data into training and testing sets
+    # Split Data 80/20
     train_size = int(len(X) * 0.8)
     X_train = X[:train_size]
     y_train = y_norm[:train_size]
@@ -45,12 +45,12 @@ def test_betting_system():
     # Normalize features
     feature_means = X_train.mean(axis=0)
     feature_stds = X_train.std(axis=0)
-    feature_stds[feature_stds == 0] = 1.0  # Prevent division by zero
+    feature_stds[feature_stds == 0] = 1.0
 
     X_train = (X_train - feature_means) / feature_stds
     X_test = (X_test - feature_means) / feature_stds
 
-    # Configure neural network
+    # Init neural network
     input_features = X_train.shape[1]
     nn = NeuralNetwork(
         layers=[input_features, 32, 16, 1],
@@ -61,25 +61,22 @@ def test_betting_system():
         beta=0.9
     )
 
-    # Train the neural network
-    print("Training neural network...")
+    # Train the network
+    print("Training network...")
     nn.train(X_train, y_train, epochs=1000, batchsize=32)
 
-    # Predict spreads on the test set
+    # spread prediction
     print("\nEvaluating neural network...")
     raw_predictions = nn.prediction(X_test)
-    predictions = (raw_predictions * spread_std) + spread_mean  # Denormalize predictions
+    predictions = (raw_predictions * spread_std) + spread_mean
 
-    # Evaluation metrics
+    # Eval
     mse = np.mean((predictions - y_test) ** 2)
     rmse = np.sqrt(mse)
-    mae = np.mean(np.abs(predictions - y_test))
     print("\nEvaluation Metrics:")
     print(f"MSE: {mse:.4f}")
     print(f"RMSE: {rmse:.4f}")
-    print(f"MAE: {mae:.4f}")
 
-    # Initialize betting system
     betting_system = NFLBettingSystem(
         feature_processor=feature_processor,
         neural_network=nn,
@@ -88,14 +85,14 @@ def test_betting_system():
 
     # Find value bets
     print("\nFinding value bets...")
-    test_data = processed_data[train_size:].reset_index(drop=True)  # Ensure indices match
+    test_data = processed_data[train_size:].reset_index(drop=True)
     opportunities = betting_system.find_value_bets(
         test_data,
         predictions,
-        minimum_edge=4.0  # Conservative threshold
+        minimum_edge=4.0
     )
 
-    # Print betting results
+    # Print results
     print(f"\nFound {len(opportunities)} potential betting opportunities")
     if len(opportunities) > 0:
         total_pnl = 0
@@ -117,7 +114,6 @@ def test_betting_system():
             if pnl > 0:
                 winning_bets += 1
 
-        # Enhanced results reporting
         print("\nBacktesting Results:")
         print(f"Total Bets: {len(opportunities)}")
         print(f"Winning Bets: {winning_bets}")
@@ -127,7 +123,7 @@ def test_betting_system():
         print(f"ROI: {(total_pnl / total_stake * 100):.2f}%")
         print(f"Average Bet Size: ${total_stake / len(opportunities):.2f}")
 
-        # Sample betting opportunities
+        # Take sample
         print("\nSample Betting Opportunities:")
         for opp in opportunities[:5]:
             print(f"\nDate: {opp['date']}")

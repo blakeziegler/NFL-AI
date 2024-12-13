@@ -50,7 +50,7 @@ class NFLBettingSystem:
     def find_value_bets(self,
                         features: pd.DataFrame,
                         predicted_spreads: np.ndarray,
-                        minimum_edge: float = 4.0) -> List[Dict]:
+                        minimum_edge: float = 3.0) -> List[Dict]:
         """Identify betting opportunities with double validation"""
         opportunities = []
         if len(predicted_spreads.shape) > 1:
