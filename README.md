@@ -11,6 +11,8 @@ and 'test_feature_engineering.py' files.
 
 To test the betting system as a whole, run the 'test_betting_system.py' file.
 
+*All test files are located in src*
+
 ### Introduction
 The purpose of this project was to determine whether a machine learning approach to sports-betting
 would outperform popular alternative strategies.  Our project utilizes the predictive capabilities of 

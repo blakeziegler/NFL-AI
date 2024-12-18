@@ -16,11 +16,11 @@ class NFLBettingSystem:
         self.active_positions: List[Dict] = []
 
     def process_game_data(self, game_data: pd.DataFrame) -> pd.DataFrame:
-        """Process raw game data into features for prediction"""
+        """process raw data to features"""
         return self.feature_processor.process_initial_features(game_data)
 
     def _prepare_prediction_features(self, features: pd.DataFrame) -> np.ndarray:
-        """Prepare feature matrix for neural network input"""
+        """Prep feature matrix"""
         selected_features = [
             'power_rating_diff',
             'home_last3_points', 'home_last3_points_allowed',
