@@ -259,6 +259,7 @@ class NFLFeatureProcessor:
 
     def _validate_power_ratings(self, df: pd.DataFrame) -> None:
         """
+        Validate power ratings and print warnings for potential issues
         """
         # Check if ratings are being updated
         if len(set(df['power_rating_diff'])) <= 1:
