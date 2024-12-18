@@ -45,12 +45,12 @@ def test_betting_system():
     # Normalize features
     feature_means = X_train.mean(axis=0)
     feature_stds = X_train.std(axis=0)
-    feature_stds[feature_stds == 0] = 1.0  # Prevent division by zero
+    feature_stds[feature_stds == 0] = 1.0 
 
     X_train = (X_train - feature_means) / feature_stds
     X_test = (X_test - feature_means) / feature_stds
 
-    # Configure neural network
+    # neural network
     input_features = X_train.shape[1]
     nn = NeuralNetwork(
         layers=[input_features, 32, 16, 1],
@@ -61,16 +61,16 @@ def test_betting_system():
         beta=0.9
     )
 
-    # Train the neural network
+    # training
     print("Training neural network...")
     nn.train(X_train, y_train, epochs=1000, batchsize=32)
 
-    # Predict spreads on the test set
+    # test set
     print("\nEvaluating neural network...")
     raw_predictions = nn.prediction(X_test)
-    predictions = (raw_predictions * spread_std) + spread_mean  # Denormalize predictions
+    predictions = (raw_predictions * spread_std) + spread_mean 
 
-    # Evaluation metrics
+    # metrics
     mse = np.mean((predictions - y_test) ** 2)
     rmse = np.sqrt(mse)
     mae = np.mean(np.abs(predictions - y_test))
@@ -79,7 +79,7 @@ def test_betting_system():
     print(f"RMSE: {rmse:.4f}")
     print(f"MAE: {mae:.4f}")
 
-    # Initialize betting system
+    # initialize betting system
     betting_system = NFLBettingSystem(
         feature_processor=feature_processor,
         neural_network=nn,
@@ -88,7 +88,7 @@ def test_betting_system():
 
     # Find value bets
     print("\nFinding value bets...")
-    test_data = processed_data[train_size:].reset_index(drop=True)  # Ensure indices match
+    test_data = processed_data[train_size:].reset_index(drop=True)  
     opportunities = betting_system.find_value_bets(
         test_data,
         predictions,
@@ -117,7 +117,7 @@ def test_betting_system():
             if pnl > 0:
                 winning_bets += 1
 
-        # Enhanced results reporting
+        # results reporting
         print("\nBacktesting Results:")
         print(f"Total Bets: {len(opportunities)}")
         print(f"Winning Bets: {winning_bets}")

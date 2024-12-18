@@ -103,11 +103,11 @@ class NFLBettingSystem:
         if abs(edge) < 4.0 or abs(edge) > 10.0:  # Cap maximum edge
             return False
 
-        # More conservative limits on spread ranges
+        
         if abs(market_spread) > 7:
-            return abs(edge) >= 5.0 and abs(edge) <= 8.0  # Tighter range for big spreads
+            return abs(edge) >= 5.0 and abs(edge) <= 8.0
 
-        # No bets on huge spreads
+        # no bets on huge spreads
         if abs(market_spread) > 10:
             return False
 
