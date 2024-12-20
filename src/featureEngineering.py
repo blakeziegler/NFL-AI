@@ -1,3 +1,13 @@
+"""
+Feature engineering for neural network and betting system compatibility
+------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
+------------------------------------------------------------------------------
+"""
+
+
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple

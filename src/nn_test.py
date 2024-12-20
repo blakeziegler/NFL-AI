@@ -1,3 +1,13 @@
+"""
+Neural Network test
+------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
+------------------------------------------------------------------------------
+"""
+
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

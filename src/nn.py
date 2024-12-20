@@ -1,3 +1,28 @@
+"""
+Neural Network component of the betting system
+------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
+------------------------------------------------------------------------------
+Citations:
+
+- All code was originally written by the authors. Inspiration for the genral
+architecture and methodology was in part derived from:
+
+1.
+@author = Deborah Mesquita
+@Organization = Real Python
+@Title = Python AI: How to Build a Neural Network and Make Predictions
+@URL = https://realpython.com/python-ai-neural-network/
+
+2.
+@author = GeeksforGeeks Staff
+@Organization = GeeksforGeeks
+@Title = Implementation of a neural network from scratch using NumPy
+@URL = https://www.geeksforgeeks.org/implementation-of-neural-network-from-scratch-using-numpy/
+"""
+
 import numpy as np
 
 class NeuralNetwork:

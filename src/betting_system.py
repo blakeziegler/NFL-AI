@@ -1,3 +1,12 @@
+"""
+Betting system with neural network and feature engineering incorporation
+------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
+------------------------------------------------------------------------------
+"""
+
 from typing import Dict, List
 import pandas as pd
 import numpy as np

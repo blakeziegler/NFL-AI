@@ -1,3 +1,12 @@
+"""
+Betting system tests
+------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
+------------------------------------------------------------------------------
+"""
+
 import pandas as pd
 import numpy as np
 from betting_system import NFLBettingSystem
