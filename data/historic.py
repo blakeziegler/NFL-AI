@@ -1,4 +1,14 @@
-# Data Cleaning for historic.csv
+"""
+Data pre-clean
+------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
+------------------------------------------------------------------------------
+Data Sourced from:
+@Author= @tonycrabtree via kaggle.com
+@URL= https://www.kaggle.com/datasets/tobycrabtree/nfl-scores-and-betting-data
+"""
 
 # imports
 import pandas as pd

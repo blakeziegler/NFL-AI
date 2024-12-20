@@ -8,7 +8,7 @@ Copyright (c) 2024 Blake Ziegler, Samy Salama, Cole Bradfield, Aaron Eads
 Citations:
 
 - All code was originally written by the authors. Inspiration for the genral
-architecture and methodology was in part derived from:
+architecture and methodology was derived in part from:
 
 1.
 @author = Deborah Mesquita
